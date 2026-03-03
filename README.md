@@ -1,4 +1,4 @@
-* Neural Networks and Deep Learning
+*"Neural Networks and Deep Learning"* 
 This repository contains updated and modified code samples based on the book **"Neural Networks and Deep Learning"** by Michael Nielsen.
 
 ## Overview
