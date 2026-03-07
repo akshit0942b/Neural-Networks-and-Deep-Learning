@@ -15,7 +15,7 @@ This version is a modernized fork of the original repository. The codebase has b
 - Migrated from **Python 2.6/2.7** to **Python 3.10**
 - Removed legacy Python 2 syntax
 - Updated deprecated library usage
-- Added a sobel filter method in adddition to darkness averaging, by enhancing the edge features, the accuracy increased from 22% to 28%..
+- Added a sobel filter method in addition to darkness averaging, by enhancing the edge features, the accuracy increased from 22% to 28%.
 ---
 
 ## About `network3.py`
