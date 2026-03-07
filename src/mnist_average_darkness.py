@@ -23,6 +23,8 @@ from collections import defaultdict
 
 # My libraries
 import mnist_loader
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 def main():
     training_data, validation_data, test_data = mnist_loader.load_data()
@@ -34,7 +36,9 @@ def main():
     num_correct = sum(int(guess_digit(image, avgs) == digit)
                       for image, digit in zip(test_data[0], test_data[1]))
     print("Baseline classifier using average darkness of image.")
+    print()
     print("%s of %s values correct." % (num_correct, len(test_data[1])))
+    print()
 
 def avg_darknesses(training_data):
     """ Return a defaultdict whose keys are the digits 0 through 9.

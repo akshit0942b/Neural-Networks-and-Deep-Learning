@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/akshit/Downloads/CVIT/Neural Networks/neural-networks-and-deep-learning/.venv/bin/python" "$0" "$@"
+'''exec' "/Users/akshit/Downloads/CVIT/Neural Networks/NN&DL/Neural-Networks-and-Deep-Learning/.venv/bin/python3.14" "$0" "$@"
 ' '''
 import sys
 from fontTools.ttx import main

@@ -12,7 +12,8 @@ function usually called by our neural network code.
 # Standard library
 import pickle
 import gzip
-
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 # Third-party libraries
 import numpy as np
 

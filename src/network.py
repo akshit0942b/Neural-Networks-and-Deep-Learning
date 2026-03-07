@@ -13,8 +13,9 @@ and omits many desirable features.
 # Standard library
 import random
 
-# Third-party libraries
 import numpy as np
+import cv2
+
 
 class Network(object):
 
@@ -34,6 +35,46 @@ class Network(object):
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
+
+
+    def sobel_transform(self, images):
+        """
+        Takes a list/array of flattened MNIST images (shape: N x 784),
+        applies Histogram Equalization + Sobel edge detection to each,
+        and returns a list of Sobel images with the same size as input.
+        """
+
+        sobel_images = []
+
+        for image in images:
+
+            # reshape flattened image to 28x28
+            img_2d = image.reshape(28, 28)
+
+            # convert to uint8
+            img_uint8 = np.uint8(img_2d * 255)
+
+            # histogram equalization
+            eq_img = cv2.equalizeHist(img_uint8)
+
+            # sobel gradients
+            sobelx = cv2.Sobel(eq_img, cv2.CV_64F, 1, 0, ksize=3)
+            sobely = cv2.Sobel(eq_img, cv2.CV_64F, 0, 1, ksize=3)
+
+            # gradient magnitude
+            sobel_mag = cv2.magnitude(sobelx, sobely)
+
+            # normalize to [0, 1]
+            max_val = np.max(sobel_mag)
+            if max_val > 0:
+                sobel_mag = sobel_mag / max_val
+
+            # append the flattened/reshaped image so it's compatible with the network
+            sobel_images.append(sobel_mag.reshape(image.shape))
+
+        return sobel_images
+
+
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -125,6 +166,42 @@ class Network(object):
         test_results = [(np.argmax(self.feedforward(x)), y)
                         for (x, y) in test_data]
         return sum(int(x == y) for (x, y) in test_results)
+
+    def get_misclassified(self, test_data):
+        """Return a list of tuples (index, image, predicted, actual)
+        for every test input the network gets wrong."""
+        misclassified = []
+        for i, (x, y) in enumerate(test_data):
+            predicted = np.argmax(self.feedforward(x))
+            actual = y
+            if predicted != actual:
+                misclassified.append((i, x, predicted, actual))
+        print(f"Misclassified: {len(misclassified)} / {len(test_data)}")
+        return misclassified
+
+    def show_misclassified(self, test_data, num=96):
+        """Display a grid of misclassified images with predicted vs
+        actual labels.  ``num`` controls how many to show (default 25).
+        Requires matplotlib."""
+        import matplotlib.pyplot as plt
+        misclassified = self.get_misclassified(test_data)
+        num = min(num, len(misclassified))
+        cols = 16
+        rows = 6
+        fig, axes = plt.subplots(rows, cols, figsize=(12, 2.5 * rows))
+        axes = axes.flatten()
+        for i in range(num):
+            idx, img, pred, actual = misclassified[i]
+            axes[i].imshow(img.reshape(28, 28), cmap='gray')
+            axes[i].set_title(f"#{idx}\nPred: {pred}  Actual: {actual}",
+                              fontsize=9, color='red')
+            axes[i].axis('off')
+        # hide any unused subplots
+        for i in range(num, len(axes)):
+            axes[i].axis('off')
+        fig.suptitle("Misclassified Test Cases", fontsize=14, fontweight='bold')
+        plt.tight_layout()
+        plt.show()
 
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
