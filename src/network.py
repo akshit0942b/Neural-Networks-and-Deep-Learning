@@ -74,7 +74,15 @@ class Network(object):
 
         return sobel_images
 
-
+    def gaussian_blur(self, image, ksize=(9, 9), sigmaX=0):
+        """
+        Applies a Gaussian blur to a single flattened image and returns
+        the blurred image with the same shape as the input.
+        """
+        img_2d = image.reshape(28, 28)
+        # Apply Gaussian blur using OpenCV
+        blurred_img = cv2.GaussianBlur(img_2d, ksize, sigmaX)
+        return blurred_img.reshape(image.shape)
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
