@@ -74,6 +74,33 @@ class Network(object):
 
         return sobel_images
 
+    def erode_transform(self, images, kernel_size=(2, 2), iterations=1):
+        """
+        Takes a list/array of flattened MNIST images (shape: N x 784),
+        applies morphological erosion to each, and returns a list of
+        eroded images with the same shape as input.
+        """
+        eroded_images = []
+        kernel = np.ones(kernel_size, np.uint8)
+
+        for image in images:
+            # reshape flattened image to 28x28
+            img_2d = image.reshape(28, 28)
+
+            # convert to uint8
+            img_uint8 = np.uint8(img_2d * 255)
+
+            # erosion
+            eroded = cv2.erode(img_uint8, kernel, iterations=iterations)
+
+            # normalize to [0, 1]
+            eroded_norm = eroded.astype(np.float32) / 255.0
+
+            # append the flattened/reshaped image so it's compatible with the network
+            eroded_images.append(eroded_norm.reshape(image.shape))
+
+        return eroded_images
+
     def gaussian_blur(self, image, ksize=(9, 9), sigmaX=0):
         """
         Applies a Gaussian blur to a single flattened image and returns
